@@ -1,0 +1,34 @@
+**Load the csv data in the tables**
+-----------------------------------------------------------------------------------------
+1) hdfs dfs -mkdir -p  /tmp/olympix
+2) hdfs dfs -copyFromLocal /tmp/olympix_data.csv /tmp/olympix/
+
+3) create external table olympix_data (athlete_name string,age int,country string,year int,closing_date string,sport_name string,no_gold int,no_silver int,no_bronze int,no_total int) row format delimited fields terminated by '\t' stored as textfile location '/tmp/olympix/';
+
+4) create table my_olympix_data (athlete_name string,age int,country string,year int,closing_date string,sport_name string,no_gold int,no_silver int,no_bronze int,no_total int) row format delimited fields terminated by '\t' stored as orc;
+
+5) insert overwrite table my_olympix_data select athlete_name,age,country,year,cast(to_date(from_unixtime(unix_timestamp(closing_date,'MM-dd-yy'))) as date),sport_name,no_gold,no_silver,no_bronze,no_total from olympix_data;
+----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+
+1) Hive program to find the number of medals won by each country in swimming
+
+select sum(no_total),sport_name,country from my_olympix_data  where sport_name = "Swimming" group by country,sport_name;
+
+-----------------------------------------------------------------------------------------
+2) Hive program to find the number of medals that India won year wise
+
+select sum(no_total),year from my_olympix_data where country='India' group by year;
+
+-----------------------------------------------------------------------------------------
+
+3) Hive Program to find the total number of medals each country won
+
+select sum(no_total),country from my_olympix_data group by country;
+
+-----------------------------------------------------------------------------------------
+
+4) Hive program to find the number of gold medals each country won
+
+select sum(no_gold),country from my_olympix_data group by country;
+-----------------------------------------------------------------------------------------
