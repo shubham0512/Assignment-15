@@ -1,0 +1,6 @@
+1) create table emp_details (name string,skill string,exp int,location string) row format delimited fields terminated by ',' stored as textfile;
+
+2) load data inpath '/tmp/emp_details_15.txt' into table emp_details;
+
+
+3) select skill,count(*) from emp_details group by skill;
